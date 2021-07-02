@@ -19,7 +19,7 @@ const onJoin = function (socket, io) {
     io.emit(Events.updateOnline, ++totalOnline);
   }
   users[user].push({ user: socket.request.user, socket: socket });
-  log(`${user} connected with socket id: ${socket.id}, currently ${users[user].length} sessions`);
+  log(`${user} connected with socket id: ${socket.id} and session id ${session.id}, currently ${users[user].length} sessions`);
 
   return socket.request.user;
 }
