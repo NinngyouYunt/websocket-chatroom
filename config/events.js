@@ -3,7 +3,7 @@ const events = {
   "updateOnline": "online",
   "chat": "chat",
   "dm": "dm",
-  "error": "error"
+  "system": "system"
 }
 if (typeof window === "undefined") {
   module.exports = events;

@@ -62,6 +62,8 @@
 </head>
 
 <body>
+  <p>Socket ID: <span id="socketId"></span></p>
+  <p>Username: <span id="username"></span></p>
   <ul id="messages"></ul>
   <div class="bottom">
     <form id="form" action="">
@@ -70,10 +72,12 @@
     </form>
   </div>
 </body>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/events"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
+  const socketIdSpan = document.getElementById("socketId");
+  const usernameSpan = document.getElementById("username");
   var messages = document.getElementById("messages");
   var form = document.getElementById("form");
   var input = document.getElementById("input");
@@ -86,7 +90,6 @@
       input.value = '';
     }
   });
-
   function appendMessage(msg, bold) {
     var item = document.createElement("li");
     if (bold) {
@@ -97,13 +100,20 @@
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
   };
+
+  socket.on("connect", () => {
+    socketIdSpan.innerText = socket.id;
+    socket.emit('whoami', (username) => {
+      usernameSpan.innerText = username;
+    });
+  });
   socket.on("chat", (msg) => { appendMessage(msg); });
   socket.on(events.global, (msg) => { appendMessage(msg); });
   socket.on(events.updateOnline, (msg) => {
     onlineNumber.textContent = msg;
   });
-  socket.on(events.dm, (msg) => {appendMessage(msg, true)});
-  socket.on(events.error, (msg) => {appendMessage(msg, true)});
+  socket.on(events.dm, (msg) => { appendMessage(msg, true) });
+  socket.on(events.system, (msg) => { appendMessage(msg, true) });
 </script>
 
 </html>

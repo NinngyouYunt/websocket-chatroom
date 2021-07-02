@@ -1,20 +1,31 @@
-const Events = require("./events");
+const Events = require("./config/events");
 let users = {};
 let totalOnline = 0;
+
+const onJoin = function (socket, io) {
+  const user = socket.request.user;
+  console.log(`${user} connected with socket id: ${socket.id}`);  
+  const session = socket.request.session;
+  session.socketId = socket.id;
+  session.save();
+
+  socket.on("whoami", (cb) => {
+    cb(socket.request.user ? socket.request.user.username : '');
+  });
+  io.emit(Events.system, `${user.username} joined`);
+  io.emit(Events.updateOnline, ++totalOnline);
+  return user;
+}
 
 const connection = function (io) {
   return (socket) => {
     // On Join
-    const user = Date.now();
-    console.log(`${user} joined`);
-    users[user] = socket;
-    io.emit(Events.updateOnline, ++totalOnline)
-    io.emit(Events.global, `${user} joined the chat`);
+    const user = onJoin(socket, io).username;
     // On Leave
     socket.on("disconnect", () => {
       console.log(`${user} left`);
       delete users[user];
-      io.emit(Events.global, `${user} left the chat`);
+      io.emit(Events.system, `${user} left the chat`);
       io.emit(Events.updateOnline, --totalOnline)
     });
     // same Events as the client
@@ -28,7 +39,7 @@ const connection = function (io) {
           msg = msg.slice(msg.indexOf(mention) + mention.length);
           users[mention].emit(Events.dm, `${user} whispered: ${msg}`)
         } else {
-          socket.emit("error", `Error: ${mention} does not exist`);
+          socket.emit(Events.system, `Error: ${mention} does not exist`);
         }
       } else {
         io.emit("chat", `${user}: ${msg}`);
