@@ -43,6 +43,7 @@
       border-radius: 3px;
       outline: none;
       color: #fff;
+      cursor: pointer;
     }
 
     #messages {
@@ -58,10 +59,31 @@
     #messages>li:nth-child(odd) {
       background: #efefef;
     }
+
+    #logout {
+      padding: 0.25rem;
+      position: fixed;
+      right:0
+    }
+
+    #logout>input {
+      background: #333;
+      border: none;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 3px;
+      outline: none;
+      color: #fff;
+      padding: 0.75rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
+  <form id="logout" action="/logout" method="post">
+    <input type="submit" value="Log out" />
+  </form>
   <p>Socket ID: <span id="socketId"></span></p>
   <p>Username: <span id="username"></span></p>
   <ul id="messages"></ul>

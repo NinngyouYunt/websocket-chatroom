@@ -13,18 +13,21 @@ require("./auth/strategy")();
 const config = require("./config/config");
 // Express
 const app = express();
+
+// sessionStore
+const FileStore = require('session-file-store')(session);
+const fileStoreOptions = {};
 const sessionMiddleware = session({
   secret: config.sessionSecret,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  store: new FileStore(fileStoreOptions)
 });
 
 app.use(sessionMiddleware);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-registerRoute(app);
 // create http server
 const server = http.createServer(app);
 
@@ -43,6 +46,7 @@ io.use((socket, next) => {
   }
 });
 
+registerRoute(app, io);
 routeSocket(io);
 
 // register port

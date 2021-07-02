@@ -1,6 +1,6 @@
 const passport = require("passport");
 
-module.exports = (app) => {
+module.exports = (app, io) => {
   // Route
   app.get("/", (req, res) => {
     if (!!req.user) {
